@@ -1,7 +1,7 @@
 {
-  "name": "redux-todos-example",
+  "name": "react-todo-example",
   "version": "0.0.0",
-  "description": "Redux Todos example",
+  "description": "",
   "scripts": {
     "start": "babel-node devServer.js",
     "lint": "eslint src"
@@ -38,5 +38,6 @@
     "express": "^4.13.3",
     "webpack": "^1.9.11",
     "webpack-dev-middleware": "^1.2.0"
-  }
+  },
+  "keywords": []
 }

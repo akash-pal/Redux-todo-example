@@ -33,19 +33,19 @@ const configureStore = () => {
   };
 
   //initial state from storage
-  const persistedStore = loadState();
+  //const persistedStore = loadState();
 
   const store = createStore(
     todoApp,
-    persistedStore,
+    //persistedStore,
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
   );
 
-  store.subscribe(
-    throttle(() => {
-      saveState({ todos: store.getState().todos });
-    }, 1000)
-  );
+  // store.subscribe(
+  //   throttle(() => {
+  //     saveState({ todos: store.getState().todos });
+  //   }, 1000)
+  // );
 
   if (process.env.NODE_ENV !== "production") {
     store.dispatch = addLoggingToDispatch(store);
