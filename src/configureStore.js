@@ -1,4 +1,6 @@
-import { createStore } from "redux";
+import { createStore, applyMiddleware, compose } from "redux";
+import promise from "redux-promise";
+import logger from "redux-logger";
 import todoApp from "./reducers";
 import { loadState, saveState } from "./localStorage";
 import throttle from "lodash.throttle";
@@ -55,26 +57,34 @@ const configureStore = () => {
 
   const middlewares = [];
 
-  const store = createStore(
-    todoApp,
-    //persistedStore,
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-  );
-
   // store.subscribe(
   //   throttle(() => {
   //     saveState({ todos: store.getState().todos });
   //   }, 1000)
   // );
 
-  if (process.env.NODE_ENV !== "production") {
-    middlewares.push(addLoggingToDispatch);
-    //store.dispatch = addLoggingToDispatch(store);
-  }
-  middlewares.push(addPromiseSupportToDispatch);
+  middlewares.push(promise);
+  //middlewares.push(addPromiseSupportToDispatch);
   //store.dispatch = addPromiseSupportToDispatch(store);
 
-  wrapMiddlewaresToDispatch(middlewares, store);
+  if (process.env.NODE_ENV !== "production") {
+    middlewares.push(logger);
+    //middlewares.push(addLoggingToDispatch);
+    //store.dispatch = addLoggingToDispatch(store);
+  }
+
+  //wrapMiddlewaresToDispatch(middlewares, store);
+
+  const composeEnhancers =
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+  const store = createStore(
+    todoApp,
+    //persistedStore,
+    // window.__REDUX_DEVTOOLS_EXTENSION__ &&
+    //   window.__REDUX_DEVTOOLS_EXTENSION__(),
+    composeEnhancers(applyMiddleware(...middlewares))
+  );
 
   return store;
 };
