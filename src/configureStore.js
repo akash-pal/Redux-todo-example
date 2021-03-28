@@ -15,35 +15,45 @@ const configureStore = () => {
     ]
   };
 
-  const addLoggingToDispatch = (store) => {
-    const rawDispatch = store.dispatch;
-    if (!console.group) {
-      return rawDispatch;
-    }
+  const addLoggingToDispatch = () => {
+    return (next) => {
+      if (!console.group) {
+        return next;
+      }
 
-    return (action) => {
-      console.group(action.type);
-      console.log("%c prev state", "color: grey", store.getState());
-      console.log("%c prev action", "color: blue", action);
-      const returnValue = rawDispatch(action);
-      console.log("%c next state", "color: green", store.getState());
-      console.groupEnd(action.type);
-      return returnValue;
+      return (action) => {
+        console.group(action.type);
+        console.log("%c prev state", "color: grey", store.getState());
+        console.log("%c prev action", "color: blue", action);
+        const returnValue = next(action);
+        console.log("%c next state", "color: green", store.getState());
+        console.groupEnd(action.type);
+        return returnValue;
+      };
     };
   };
 
-  const addPromiseSupportToDispatch = (store) => {
-    const rawDispatch = store.dispatch;
-    return (action) => {
-      if (typeof action.then === "function") {
-        return action.then(rawDispatch);
-      }
-      return rawDispatch(action);
+  const addPromiseSupportToDispatch = () => {
+    return (next) => {
+      return (action) => {
+        if (typeof action.then === "function") {
+          return action.then(next);
+        }
+        return next(action);
+      };
     };
+  };
+
+  const wrapMiddlewaresToDispatch = (middlewares, store) => {
+    middlewares.forEach((middleware) => {
+      store.dispatch = middleware(store)(store.dispatch);
+    });
   };
 
   //initial state from storage
   //const persistedStore = loadState();
+
+  const middlewares = [];
 
   const store = createStore(
     todoApp,
@@ -58,10 +68,13 @@ const configureStore = () => {
   // );
 
   if (process.env.NODE_ENV !== "production") {
-    store.dispatch = addLoggingToDispatch(store);
+    middlewares.push(addLoggingToDispatch);
+    //store.dispatch = addLoggingToDispatch(store);
   }
+  middlewares.push(addPromiseSupportToDispatch);
+  //store.dispatch = addPromiseSupportToDispatch(store);
 
-  store.dispatch = addPromiseSupportToDispatch(store);
+  wrapMiddlewaresToDispatch(middlewares, store);
 
   return store;
 };
