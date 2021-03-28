@@ -10,7 +10,7 @@ export const addTodo = (text) => ({
 
 export const receiveTodos = (todo, filter) => ({
   type: "RECIEVE_TODO",
-  todo,
+  response: todo,
   filter
 });
 

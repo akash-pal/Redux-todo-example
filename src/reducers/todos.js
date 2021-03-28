@@ -1,24 +1,62 @@
 import { combineReducers } from "redux";
-import { todo } from "./todo";
 
 const byId = (state = {}, action) => {
   switch (action.type) {
-    case "ADD_TODO":
-    case "TOGGLE_TODO":
-      return { ...state, [action.id]: todo(state[action.id], action) };
+    case "RECIEVE_TODO":
+      let filterTodos = state[action.filter];
+      action.response.forEach(
+        (todo) => (filterTodos = { ...filterTodos, [todo.id]: todo })
+      );
+      return {
+        ...state,
+        ...filterTodos
+      };
     default:
       return state;
   }
 };
 
-const allIds = (state = [], action) => {
-  switch (action.type) {
-    case "ADD_TODO":
-      return [...state, action.id];
-    default:
-      return state;
+const all = (state = [], action) => {
+  if (action.filter === "all") {
+    switch (action.type) {
+      case "RECIEVE_TODO":
+        return action.response.map((todo) => todo.id);
+      default:
+        return state;
+    }
   }
+  return state;
 };
+
+const active = (state = [], action) => {
+  if (action.filter === "active") {
+    switch (action.type) {
+      case "RECIEVE_TODO":
+        return action.response.map((todo) => todo.id);
+      default:
+        return state;
+    }
+  }
+  return state;
+};
+
+const completed = (state = [], action) => {
+  if (action.filter === "completed") {
+    switch (action.type) {
+      case "RECIEVE_TODO":
+        return action.response.map((todo) => todo.id);
+      default:
+        return state;
+    }
+  }
+  return state;
+};
+
+let allIds = combineReducers({
+  all,
+  active,
+  completed
+});
 
 const todos = combineReducers({
   byId,
@@ -27,20 +65,6 @@ const todos = combineReducers({
 
 export default todos;
 
-const getAllTodos = (state) => {
-  return state.allIds.map((id) => state.byId[id]);
-};
-
 export const getVisibleTodos = (state, filter) => {
-  const allTodos = getAllTodos(state);
-  switch (filter) {
-    case "all":
-      return allTodos;
-    case "completed":
-      return allTodos.filter((t) => t.completed);
-    case "active":
-      return allTodos.filter((t) => !t.completed);
-    default:
-      throw new Error(`Unknown filter: ${filter}.`);
-  }
+  return state.allIds[filter].map((id) => state.byId[id]);
 };
