@@ -1,5 +1,6 @@
 import { createStore, applyMiddleware, compose } from "redux";
 import promise from "redux-promise";
+import thunk from 'redux-thunk';
 import logger from "redux-logger";
 import todoApp from "./reducers";
 import { loadState, saveState } from "./localStorage";
@@ -35,8 +36,8 @@ const configureStore = () => {
     };
   };
 
-  const thunk = (store) => (next) => (action) => {
-    if (typeof action === "function") action(store.dispatch);
+  const thunkMiddleware = (store) => (next) => (action) => {
+    if (typeof action === "function") action(store.dispatch, store.getState);
     else next(action);
   };
 

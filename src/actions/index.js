@@ -1,5 +1,6 @@
 import { v4 } from "node-uuid";
 import * as api from "../api/index";
+import { getisFetching } from "../reducers";
 
 //object expression
 export const addTodo = (text) => ({
@@ -24,7 +25,11 @@ export const toggleTodo = (id) => ({
   id
 });
 
-export const fetchTodos = (filter) => (dispatch) => {
+export const fetchTodos = (filter) => (dispatch, getState) => {
+  if (getisFetching(getState(), filter)) {
+    return Promise.resolve();
+  }
+
   dispatch(requestTodo(filter));
   return api
     .fetchTodos(filter)
