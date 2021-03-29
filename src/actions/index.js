@@ -10,13 +10,19 @@ export const addTodo = (text) => ({
 });
 
 const requestTodo = (filter) => ({
-  type: "REQUEST_TODO",
+  type: "FETCH_TODO",
   filter
 });
 
 export const receiveTodos = (todo, filter) => ({
-  type: "RECIEVE_TODO",
+  type: "FETCH_TODO_SUCCESS",
   response: todo,
+  filter
+});
+
+export const errorTodos = (error, filter) => ({
+  type: "FETCH_TODO_ERROR",
+  error,
   filter
 });
 
@@ -31,7 +37,10 @@ export const fetchTodos = (filter) => (dispatch, getState) => {
   }
 
   dispatch(requestTodo(filter));
-  return api
-    .fetchTodos(filter)
-    .then((todos) => dispatch(receiveTodos(todos, filter)));
+  return api.fetchTodos(filter).then(
+    (todos) => dispatch(receiveTodos(todos, filter)),
+    (error) => {
+      dispatch(errorTodos(error.message, filter));
+    }
+  );
 };

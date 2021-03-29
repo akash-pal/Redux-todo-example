@@ -22,3 +22,6 @@ export const getVisibleTodos = (state, filter) => {
 
 export const getisFetching = (state, filter) =>
   fromList.getIsFetching(state.filterByIds[filter]);
+
+export const getError = (state, filter) =>
+  fromList.getError(state.filterByIds[filter]);

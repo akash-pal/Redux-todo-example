@@ -1,9 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { fetchTodos, toggleTodo, requestTodo } from "../actions";
+import { fetchTodos, toggleTodo } from "../actions";
 import TodoList from "./TodoList";
-import { getVisibleTodos, getisFetching } from "../reducers/index";
+import { getVisibleTodos, getisFetching, getError } from "../reducers";
+import Error from './Error';
 
 class MainView extends React.Component {
   componentDidMount() {
@@ -22,8 +23,11 @@ class MainView extends React.Component {
   }
 
   render() {
-    if (this.props.isFetching && !this.props.todos.length) {
+    const { isFetching, todos, error } = this.props;
+    if (isFetching && !todos.length) {
       return <div>Loading...</div>;
+    } else if (error) {
+      return <Error {...this.props}/>
     }
     return <TodoList {...this.props} />;
   }
@@ -34,7 +38,8 @@ const mapStateToProps = (state, ownProps) => {
   return {
     todos: getVisibleTodos(state, filter),
     filter,
-    isFetching: getisFetching(state, filter)
+    isFetching: getisFetching(state, filter),
+    error: getError(state, filter)
   };
 };
 
