@@ -1,9 +1,9 @@
 import React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { fetchTodos, toggleTodo } from "../actions";
+import { fetchTodos, toggleTodo, requestTodo } from "../actions";
 import TodoList from "./TodoList";
-import { getVisibleTodos } from "../reducers/index";
+import { getVisibleTodos, getisFetching } from "../reducers/index";
 
 class MainView extends React.Component {
   componentDidMount() {
@@ -17,11 +17,15 @@ class MainView extends React.Component {
   }
 
   fetchData() {
-    const { filter, fetchTodos } = this.props;
+    const { filter, fetchTodos, requestTodo } = this.props;
+    requestTodo(filter);
     fetchTodos(filter);
   }
 
   render() {
+    if (this.props.isFetching && !this.props.todos.length) {
+      return <div>Loading...</div>;
+    }
     return <TodoList {...this.props} />;
   }
 }
@@ -30,7 +34,8 @@ const mapStateToProps = (state, ownProps) => {
   const filter = ownProps.filter;
   return {
     todos: getVisibleTodos(state, filter),
-    filter
+    filter,
+    isFetching: getisFetching(state, filter)
   };
 };
 
@@ -45,7 +50,8 @@ const mapDispatchToProps = (dispatch) => {
 const VisibleTodoList = withRouter(
   connect(mapStateToProps, {
     onTodoClick: toggleTodo,
-    fetchTodos
+    fetchTodos,
+    requestTodo
   })(MainView)
 );
 

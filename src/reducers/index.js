@@ -2,7 +2,7 @@ import { combineReducers } from "redux";
 import byId, * as fromById from "./byId";
 import createList, * as fromList from "./createList";
 
-let allIds = combineReducers({
+let filterByIds = combineReducers({
   all: createList("all"),
   active: createList("active"),
   completed: createList("completed")
@@ -10,12 +10,15 @@ let allIds = combineReducers({
 
 const todoApp = combineReducers({
   byId,
-  allIds
+  filterByIds
 });
 
 export default todoApp;
 
 export const getVisibleTodos = (state, filter) => {
-  const ids = fromList.getIds(state.allIds[filter]);
+  const ids = fromList.getIds(state.filterByIds[filter]);
   return ids.map((id) => fromById.getTodo(state.byId, id));
 };
+
+export const getisFetching = (state, filter) =>
+  fromList.getIsFetching(state.filterByIds[filter]);

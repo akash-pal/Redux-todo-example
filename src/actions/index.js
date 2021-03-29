@@ -8,6 +8,11 @@ export const addTodo = (text) => ({
   text
 });
 
+export const requestTodo = (filter) => ({
+  type: "REQUEST_TODO",
+  filter
+});
+
 export const receiveTodos = (todo, filter) => ({
   type: "RECIEVE_TODO",
   response: todo,
