@@ -17,8 +17,7 @@ class MainView extends React.Component {
   }
 
   fetchData() {
-    const { filter, fetchTodos, requestTodo } = this.props;
-    requestTodo(filter);
+    const { filter, fetchTodos } = this.props;
     fetchTodos(filter);
   }
 
@@ -50,8 +49,7 @@ const mapDispatchToProps = (dispatch) => {
 const VisibleTodoList = withRouter(
   connect(mapStateToProps, {
     onTodoClick: toggleTodo,
-    fetchTodos,
-    requestTodo
+    fetchTodos
   })(MainView)
 );
 

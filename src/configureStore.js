@@ -35,6 +35,11 @@ const configureStore = () => {
     };
   };
 
+  const thunk = (store) => (next) => (action) => {
+    if (typeof action === "function") action(store.dispatch);
+    else next(action);
+  };
+
   const addPromiseSupportToDispatch = () => {
     return (next) => {
       return (action) => {
@@ -63,7 +68,8 @@ const configureStore = () => {
   //   }, 1000)
   // );
 
-  middlewares.push(promise);
+  middlewares.push(thunk);
+  //middlewares.push(promise);
   //middlewares.push(addPromiseSupportToDispatch);
   //store.dispatch = addPromiseSupportToDispatch(store);
 
